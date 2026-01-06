@@ -266,4 +266,5 @@ npm run lint:fix
 Educational Use Only License (EUOL) v1.0 — free to use for learning/teaching and academic coursework. Commercial use is not permitted.
 
 ## Author
-Ricardo Vega
+Ricardo Vega 2026
+- GitHub: [@rvega1204](https://github.com/rvega1204)
