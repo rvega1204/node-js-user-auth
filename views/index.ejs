@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .dashboard {
+      padding: 40px;
+      text-align: center;
+    }
+
+    .dashboard h2 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 28px;
+    }
+
+    .welcome-text {
+      color: #667eea;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    .user-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .user-info p {
+      color: #555;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .user-info strong {
+      color: #333;
+      font-size: 16px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f8f9fa;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      background: #f8f9fa;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      color: #6c757d;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab.active {
+      background: white;
+      color: #667eea;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    .form-container {
+      display: none;
+      padding: 40px;
+    }
+
+    .form-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      display: block;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      display: block;
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .password-requirements {
+      font-size: 12px;
+      color: #6c757d;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <% if (user) { %>
+      <div class="dashboard">
+        <h2>Dashboard</h2>
+        <p class="welcome-text">Welcome, <%= user.username %>!</p>
+        <div class="dashboard-buttons">
+          <a href="/protected" class="btn btn-primary">
+            🔒 Go to Protected Area
+          </a>
+          <button onclick="handleLogout()" class="btn btn-secondary">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+    <% } else { %>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Login</button>
+        <button class="tab" onclick="switchTab('register')">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form" class="form-container active">
+        <h2>Welcome Back</h2>
+        <div id="login-message" class="message"></div>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input 
+              type="text" 
+              id="login-username" 
+              name="username" 
+              required 
+              autocomplete="username"
+              placeholder="Enter your username"
+            >
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input 
+              type="password" 
+              id="login-password" 
+              name="password" 
+              required 
+              autocomplete="current-password"
+              placeholder="Enter your password"
+            >
+          </div>
+          <button type="submit">Login</button>
+        </form>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" class="form-container">
+        <h2>Create Account</h2>
+        <div id="register-message" class="message"></div>
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="register-username">Username</label>
+            <input 
+              type="text" 
+              id="register-username" 
+              name="username" 
+              required 
+              minlength="3"
+              autocomplete="username"
+              placeholder="Minimum 3 characters"
+            >
+          </div>
+          <div class="form-group">
+            <label for="register-password">Password</label>
+            <input 
+              type="password" 
+              id="register-password" 
+              name="password" 
+              required 
+              minlength="6"
+              autocomplete="new-password"
+              placeholder="Minimum 6 characters"
+            >
+            <div class="password-requirements">
+              Password must be at least 6 characters long
+            </div>
+          </div>
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.form-container').forEach(f => f.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`${tab}-form`).classList.add('active');
+      
+      clearMessages();
+    }
+
+    function clearMessages() {
+      document.querySelectorAll('.message').forEach(msg => {
+        msg.style.display = 'none';
+        msg.className = 'message';
+      });
+    }
+
+    function showMessage(formType, message, isError = false) {
+      const messageEl = document.getElementById(`${formType}-message`);
+      messageEl.textContent = message;
+      messageEl.className = `message ${isError ? 'error' : 'success'}`;
+      messageEl.style.display = 'block';
+    }
+
+    async function handleLogin(event) {
+      event.preventDefault();
+      clearMessages();
+      
+      const form = event.target;
+      const button = form.querySelector('button');
+      button.classList.add('loading');
+      button.textContent = 'Logging in...';
+      
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage('login', 'Login successful!');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 1000);
+        } else {
+          showMessage('login', data.error || 'Login failed', true);
+        }
+      } catch (error) {
+        showMessage('login', 'Connection error. Please try again.', true);
+      } finally {
+        button.classList.remove('loading');
+        button.textContent = 'Login';
+      }
+    }
+
+    async function handleRegister(event) {
+      event.preventDefault();
+      clearMessages();
+      
+      const form = event.target;
+      const button = form.querySelector('button');
+      button.classList.add('loading');
+      button.textContent = 'Signing up...';
+      
+      const username = document.getElementById('register-username').value;
+      const password = document.getElementById('register-password').value;
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage('register', 'Account created successfully! Redirecting...');
+          form.reset();
+          setTimeout(() => {
+            switchTab('login');
+            showMessage('login', 'You can now login with your account');
+          }, 1500);
+        } else {
+          showMessage('register', data.error || 'Failed to create account', true);
+        }
+      } catch (error) {
+        showMessage('register', 'Connection error. Please try again.', true);
+      } finally {
+        button.classList.remove('loading');
+        button.textContent = 'Sign Up';
+      }
+    }
+
+    async function handleLogout() {
+      try {
+        const response = await fetch('/logout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        alert('Error logging out. Please try again.');
+      }
+    }
+  </script>
+</body>
+</html>
